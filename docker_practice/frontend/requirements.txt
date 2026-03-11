@@ -1,0 +1,8 @@
+numpy==1.26.0
+pandas==2.1.0
+python-dateutil==2.9.0.post0
+six==1.17.0
+tzdata==2025.3
+streamlit ==1.27.1
+urllib3         # explicitly include if used directly
+altair==4.2.2
