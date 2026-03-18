@@ -1,6 +1,6 @@
 import streamlit as st
-import requests as request
-API_URL = "http://127.0.0.1:8000/forecast"
+import requests
+API_URL = "http://backend:8000/forecast"
 st.title("NEXYGEN Emissions Forecasting")
 st.write("This app allows you to forecast Scope 1 and Scope 2 emissions for NEXYGEN based on pre-trained SARIMAX models.")
 with st.form("forecast_form"):
@@ -16,7 +16,7 @@ with st.form("forecast_form"):
             "steps": steps
         }
         try:
-            response = request.post(API_URL, json=payload, timeout=20)
+            response = requests.post(API_URL, json=payload, timeout=20)
             response.raise_for_status()  # Raise an error for bad status codes
             if response.status_code == 200:
                 result = response.json()
@@ -52,11 +52,11 @@ with st.form("forecast_form"):
                 st.pyplot(fig)
             else:
                 st.error(f"Error: {response.status_code} - {response.text}")
-        except request.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError:
             st.error("Connection error: Unable to connect to the API. Please ensure the API server is running.")    
-        except request.exceptions.Timeout:
+        except requests.exceptions.Timeout:
             st.error("Timeout error: The request to the API timed out. Please try again later.")
-        except request.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError as e:
             st.error(f"Backend returned an error: {e.response.text}")
         except Exception as e:
             st.error(f"An Unexpected error occurred: {e}")

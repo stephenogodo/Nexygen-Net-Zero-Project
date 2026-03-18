@@ -6,3 +6,5 @@ tzdata==2025.3
 streamlit ==1.27.1
 urllib3         # explicitly include if used directly
 altair==4.2.2
+requests        
+matplotlib

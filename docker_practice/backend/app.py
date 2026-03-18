@@ -1,21 +1,21 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import statsmodels.api as sm
+from statsmodels.iolib.smpickle import load_pickle
 from contextlib import asynccontextmanager
 import pandas as pd
 from typing import  Literal
-
-from urllib3 import request
+import requests  as r
 
 
 models = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Load the pre-trained models
-    models['scope1'] = sm.load('scope1_model.pkl')
-    models['scope2'] = sm.load('scope2_model.pkl')
+    models['scope1'] = load_pickle('scope1_model.pkl')
+    models['scope2'] = load_pickle('scope2_model.pkl')
     yield
-    # Cleanup code if needed
+    # Cleanup code if needed (e.g., close database connections)
     models.clear()
 
 
@@ -39,21 +39,21 @@ class ForecastResponse(BaseModel):
     last_training_date: str
 
 
-    @app.get("/")
-    def health_check():
-        return {"Status": "O.K", 
-                "message": "NEXYGEN API is up and running!"
-                 }
+@app.get("/")
+def health_check():
+    return {"Status": "O.K", "message": "NEXYGEN API is up and running!"}
+
+
 
 @app.post("/forecast", response_model=ForecastResponse)
-def forecast_emissions(request: ForecastRequest):
-    key = 'scope1' if request.emission_type == 'scope1' else 'scope2'
+def forecast_emissions(r: ForecastRequest):
+    key = 'scope1' if r.emission_type == 'scope1' else 'scope2'
     model = models.get(key)
     if not model:
         raise HTTPException(status_code=404, detail="Model not found")
     
     try:
-        pred = model.forecast(steps=request.steps)
+        pred = model.forecast(steps = r.steps)
         print(pred)
         
         # Use fixed last training date for monthly forecasts
@@ -61,10 +61,10 @@ def forecast_emissions(request: ForecastRequest):
         
         # Generate monthly forecast dates
         last_date = pd.to_datetime(last_training_date)
-        dates = [(last_date + pd.DateOffset(months=i+1)).strftime('%Y-%m-%d') for i in range(request.steps)]
+        dates = [(last_date + pd.DateOffset(months=i+1)).strftime('%Y-%m-%d') for i in range(r.steps)]
 
         return ForecastResponse(
-            emission_type=request.emission_type,
+            emission_type= r.emission_type,
             forecast=pred.tolist(),
             dates=dates,
             last_training_date=last_training_date
