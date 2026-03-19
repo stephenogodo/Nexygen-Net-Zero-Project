@@ -91,7 +91,7 @@ docker_practice/
 ### 🔹 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/stephenogodo/Nexygen-Net-Zero-Project.git>
 cd docker_practice
 🔹 2. Build & Run
 docker compose up --build
