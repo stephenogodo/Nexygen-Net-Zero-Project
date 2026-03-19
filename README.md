@@ -1,7 +1,7 @@
 # Nexygen-Net-Zero-Project
-This is a time series forecasting project of a power company named Nexygen that is forecasting with the aim of achieving a net zero carbon emission by the year 2040
+This is a time series forecasting project of a power company named Nexygen that is forecasting to achieve a net-zero carbon emission by the year 2040
 
-The Nexygen Net Zero Project is a technical repository centered on time series forecasting for an energy utility company. This initiative aims to assist the organization in reaching a net zero carbon footprint by the target year of 2040. The provided files include Environmental, Social, and Governance (ESG) data, as well as pre-trained machine learning models specifically designed for different emission scopes. The software environment relies on a Python-based stack, incorporating essential libraries such as Pandas for data manipulation and Scikit-learn for predictive modeling. Furthermore, FastAPI, Streamlit, and Docker configurations are included so that the project is production ready for deployment as a web service. Overall, this project demonstrated a data-driven approach to tracking and reducing atmospheric pollutants in the power sector.
+The Nexygen Net-zero Project is a technical repository centered on time-series forecasting for an energy utility company. This initiative aims to assist the organization in reaching a net-zero carbon footprint by the target year of 2040. The provided files include Environmental, Social, and Governance (ESG) data, as well as pre-trained machine learning models specifically designed for different emission scopes. The software environment relies on a Python-based stack, incorporating essential libraries such as Pandas for data manipulation and Scikit-learn for predictive modeling. Furthermore, FastAPI, Streamlit, and Docker configurations are included so that the project is production-ready for deployment as a web service. Overall, this project demonstrated a data-driven approach to tracking and reducing atmospheric pollutants in the power sector.
 
 # 🌍 NEXYGEN Net-Zero Emissions Forecasting Platform
 
@@ -91,12 +91,12 @@ docker_practice/
 ### 🔹 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/stephenogodo/Nexygen-Net-Zero-Project.git>
 cd docker_practice
 🔹 2. Build & Run
 docker compose up --build
 
-Run in background:
+Run in the background:
 
 docker compose up --build -d
 🔹 3. Access the App
