@@ -23,18 +23,21 @@ net-zero target-gap tracking.
 2. [Architecture](#architecture)
 3. [Project Structure](#project-structure)
 4. [Data](#data)
-5. [Pipelines: Data Prep, EDA & Training](#pipelines-data-prep-eda--training)
-6. [Model Selection: SARIMA vs. Prophet](#model-selection-sarima-vs-prophet)
-7. [API Reference](#api-reference)
-8. [Authentication](#authentication)
-9. [Frontend (Streamlit)](#frontend-streamlit)
-10. [Running the Project](#running-the-project)
-11. [Testing](#testing)
-12. [CI/CD](#cicd)
-13. [Deployment](#deployment)
-14. [Known Limitations & Future Work](#known-limitations--future-work)
-15. [Presentation](#presentation)
-16. [License](#license)
+5. [Pipeline Scripts Overview](#pipeline-scripts-overview)
+6. [Data Prep Pipeline](#data-prep-pipeline)
+7. [EDA Pipeline](#eda-pipeline)
+8. [Training Pipeline](#training-pipeline)
+9. [Model Selection: SARIMA vs. Prophet](#model-selection-sarima-vs-prophet)
+10. [API Reference](#api-reference)
+11. [Authentication](#authentication)
+12. [Frontend (Streamlit)](#frontend-streamlit)
+13. [Running the Project](#running-the-project)
+14. [Testing](#testing)
+15. [CI/CD](#cicd)
+16. [Deployment](#deployment)
+17. [Known Limitations & Future Work](#known-limitations--future-work)
+18. [Presentation](#presentation)
+19. [License](#license)
 
 ---
 
@@ -151,13 +154,21 @@ artifact). `/target-gap` deliberately compares **% reduction vs. baseline**
 on both sides instead of the raw absolute figures, which sidesteps the scale
 mismatch; see that endpoint's docstring in `app.py` for the full rationale.
 
-## Pipelines: Data Prep, EDA & Training
+## Pipeline Scripts Overview
 
 The project originally used a single exploratory notebook
-(`Preprocess.ipynb`); it has been replaced by two focused, runnable
-pipeline scripts, both importable and CLI-runnable.
+(`Preprocess.ipynb`); it has been replaced by three focused, runnable
+pipeline scripts, all importable and CLI-runnable.
 
-### `pipeline/data_prep_pipeline.py`
+| Script | Purpose | Run |
+|---|---|---|
+| `data_prep_pipeline.py` | Validate the raw CSV, split into train/test | `python pipeline/data_prep_pipeline.py --input data/ESG_Data.csv --output data/processed` |
+| `eda_report.py` | Trend, seasonality, anomaly, and driver analysis | `python pipeline/eda_report.py --input data/ESG_Data.csv --output reports` |
+| `train_pipeline.py` | Fit SARIMA + Prophet, ship the better one per scope | `python pipeline/train_pipeline.py --input data/ESG_Data.csv --output models` |
+
+## Data Prep Pipeline
+
+**File:** `pipeline/data_prep_pipeline.py`
 
 Loads and validates the raw CSV (required columns, nulls, duplicates),
 aggregates it into monthly totals per scope, and splits each into
@@ -171,7 +182,9 @@ python pipeline/data_prep_pipeline.py --input data/ESG_Data.csv --output data/pr
 Writes `{scope}_train.csv`, `{scope}_test.csv`, and `data_summary.json`
 (row counts, date range, null/duplicate counts) to `--output`.
 
-### `pipeline/eda_report.py`
+## EDA Pipeline
+
+**File:** `pipeline/eda_report.py`
 
 Trend, seasonality, anomaly, and driver analysis -- saved as PNGs + a
 `findings.md` summary rather than an interactive notebook, for the same
@@ -203,7 +216,9 @@ emissions variance via a Random Forest driver analysis, more than Location
 from driver analysis entirely -- it's always `"Active"` in this dataset, so
 it has zero variance and can't explain anything.
 
-### `pipeline/train_pipeline.py`
+## Training Pipeline
+
+**File:** `pipeline/train_pipeline.py`
 
 For each scope, fits **two candidate models** on the same train split and
 evaluates both on the same held-out test split:
