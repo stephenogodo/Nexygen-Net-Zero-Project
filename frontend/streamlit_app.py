@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import requests
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://backend:8000")
 API_KEY = os.environ.get("API_KEY", "")
