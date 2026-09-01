@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    restart: always
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      - MODEL_DIR=${MODEL_DIR:-/app/models}
+      - DATA_PATH=${DATA_PATH:-/app/data/ESG_Data.csv}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - BASELINE_YEAR=${BASELINE_YEAR:-2020}
+      - LAST_TRAINING_DATE=${LAST_TRAINING_DATE:-2024-10-01}
+      - MAX_FORECAST_STEPS=${MAX_FORECAST_STEPS:-120}
+      - API_KEY=${API_KEY:-}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:8000/health').status==200 else sys.exit(1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile.streamlit
+    restart: always
+    ports:
+      - "${FRONTEND_PORT:-8501}:8501"
+    environment:
+      - API_BASE_URL=${API_BASE_URL:-http://backend:8000}
+      - API_KEY=${API_KEY:-}
+    depends_on:
+      backend:
+        condition: service_healthy
