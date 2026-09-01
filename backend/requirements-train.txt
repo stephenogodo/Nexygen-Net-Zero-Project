@@ -1,0 +1,5 @@
+-r requirements.txt
+# training-pipeline-only extras -- not needed to just serve the API
+scikit-learn      # r2/mse/mae metrics, RandomForestRegressor for driver analysis
+pmdarima          # auto_arima order search (--search flag)
+matplotlib        # eda_report.py charts (also arrives transitively via prophet, declared explicitly to not depend on that)
