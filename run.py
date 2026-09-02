@@ -17,6 +17,7 @@ frontend/requirements.txt first. Docker mode only requires
 Docker itself; dependencies are installed inside the images.
 """
 import argparse
+import os
 import shutil
 import signal
 import subprocess
@@ -51,9 +52,19 @@ def run_local(app: str):
         if app in ("streamlit", "both"):
             _check_tool("streamlit", "Install frontend deps: pip install -r frontend/requirements.txt")
             print(f"Starting Streamlit frontend on :{FRONTEND_PORT} ...")
+            # streamlit_app.py's own default for API_BASE_URL is
+            # http://backend:8000 -- correct only inside Docker Compose's
+            # network, where "backend" resolves via Docker's internal DNS.
+            # There's no such hostname on a bare local machine, so local
+            # mode needs to point it at localhost instead. setdefault (not
+            # a hard override) means an explicitly-set API_BASE_URL --
+            # from the shell or a loaded .env file -- still wins.
+            frontend_env = os.environ.copy()
+            frontend_env.setdefault("API_BASE_URL", f"http://localhost:{BACKEND_PORT}")
             procs.append(subprocess.Popen(
                 ["streamlit", "run", "streamlit_app.py", "--server.port", FRONTEND_PORT, "--server.address", "0.0.0.0"],
                 cwd=str(FRONTEND_DIR),
+                env=frontend_env,
             ))
 
         print("Press Ctrl+C to stop." if procs else "Nothing to start.")
